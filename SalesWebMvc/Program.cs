@@ -1,12 +1,10 @@
-﻿using Quartz.Impl;
-using Quartz;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SalesWebMvc.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SalesWebMvcContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SalesWebMvcContext") ?? throw new InvalidOperationException("Connection string 'SalesWebMvcContext' not found.")));
+    options.UseMySql(builder.Configuration.GetConnectionString("SalesWebMvcContext"), new MySqlServerVersion(new Version())));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -33,16 +31,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-StdSchedulerFactory factory = new StdSchedulerFactory();
-IScheduler scheduler = await factory.GetScheduler();
-
-// and start it off
-await scheduler.Start();
-Console.WriteLine("Hi Schdule");
-
-// some sleep to show what's happening
-await Task.Delay(TimeSpan.FromSeconds(10));
-
-// and last shut down the scheduler when you are ready to close your program
-await scheduler.Shutdown();
